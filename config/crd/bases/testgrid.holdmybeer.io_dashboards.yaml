@@ -1,0 +1,144 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.17.2
+  name: dashboards.testgrid.holdmybeer.io
+spec:
+  group: testgrid.holdmybeer.io
+  names:
+    kind: Dashboard
+    listKind: DashboardList
+    plural: dashboards
+    singular: dashboard
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Dashboard is the Schema for the dashboards API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: DashboardSpec defines the desired state of Dashboard.
+            properties:
+              dashboardTab:
+                description: DashboardTab is the name of the tab be scrapped from
+                  this board
+                type: string
+              minFailures:
+                default: 2
+                description: MinFailures is the minimum number of failures to consider
+                  a test group as failing
+                minimum: 0
+                type: integer
+              minFlakes:
+                default: 3
+                description: MinFlake is the minimum number of flakes to consider
+                  a test group as flaky
+                minimum: 0
+                type: integer
+            type: object
+          status:
+            description: DashboardStatus defines the observed state of a testgrid
+              Dashboard.
+            properties:
+              lastFetched:
+                description: LastUpdate is the last fetched timestamp from testgrid.
+                format: date-time
+                type: string
+              summary:
+                description: DashboardSummary represents the list of Tabs summarized
+                  from a dashboard set in the spec.DashboardTab
+                items:
+                  description: DashboardSummary represents summary information from
+                    a TestGrid dashboard
+                  properties:
+                    dashboard_name:
+                      type: string
+                    dashboard_tab:
+                      description: DashboardTab represents test results for a specific
+                        dashboard tab
+                      properties:
+                        board_hash:
+                          type: string
+                        icon:
+                          type: string
+                        state:
+                          type: string
+                        tab_name:
+                          type: string
+                        tab_tests:
+                          items:
+                            description: TestResult contains details about an individual
+                              test run
+                            properties:
+                              error_message:
+                                type: string
+                              first_timestamp:
+                                format: int64
+                                type: integer
+                              latest_timestamp:
+                                format: int64
+                                type: integer
+                              prow_url:
+                                type: string
+                              test_name:
+                                type: string
+                              triage_url:
+                                type: string
+                            required:
+                            - error_message
+                            - first_timestamp
+                            - latest_timestamp
+                            - prow_url
+                            - test_name
+                            - triage_url
+                            type: object
+                          type: array
+                        tab_url:
+                          type: string
+                      required:
+                      - board_hash
+                      - icon
+                      - state
+                      type: object
+                    last_run_timestamp:
+                      format: int64
+                      type: integer
+                    last_update_timestamp:
+                      format: int64
+                      type: integer
+                    latest_green:
+                      type: string
+                    overall_status:
+                      type: string
+                    status:
+                      type: string
+                    url:
+                      type: string
+                  type: object
+                type: array
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
